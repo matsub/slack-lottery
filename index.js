@@ -2,6 +2,11 @@ const { Datastore } = require('@google-cloud/datastore')
 const datastore = new Datastore()
 
 
+function bare (uname) {
+  return uname.match(/<.*\|(.*)>/)[1]
+}
+
+
 async function setGroup (req) {
   // validate format
   if (!/[^ ]* .*/.test(req.body.text)) {
@@ -40,7 +45,7 @@ async function lsGroup () {
   const query = datastore.createQuery('slashLottery')
 
   const [entities] = await datastore.runQuery(query)
-  const groups = entities.map(e => `${e.group}: ${e.users}`)
+  const groups = entities.map(e => `${e.group}: ${e.users.map(bare)}`)
 
   return groups.join('\n')
 }
