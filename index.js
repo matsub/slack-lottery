@@ -3,7 +3,13 @@ const datastore = new Datastore()
 
 
 function bare (uname) {
-  return uname.match(/<.*\|(.*)>/)[1]
+  const matched = uname.match(/<.*\|(.*)>/)
+
+  if (matched === null) {
+    return uname
+  }
+
+  return matched[1]
 }
 
 
