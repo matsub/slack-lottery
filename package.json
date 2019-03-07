@@ -1,5 +1,5 @@
 {
-  "name": "mc-utils",
+  "name": "slack-lottery",
   "author": "matsub <matsub.rk@gmail.com>",
   "scripts": {
     "lint": "eslint ."
