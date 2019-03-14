@@ -47,6 +47,35 @@ async function lottery (req) {
 }
 
 
+async function lotteryN (req) {
+  const matched = req.body.text.match(/(\d+) (.*?) (.*)/)
+
+  if (matched === null) {
+    return 'Usage: /lottery-n [num-o-pick] [group] [message]'
+  }
+
+  const [, num, group, text] = matched
+
+  const query = datastore
+    .createQuery('slashLottery')
+    .filter('group', '=', group)
+  const [[entity]] = await datastore.runQuery(query)
+
+  if (entity.users === undefined) {
+    return `Could not found group: ${group}`
+  }
+
+  const users = []
+  for (let i=0; i<num; i++) {
+    const unpickedUsers = entity.users.filter(x => !users.includes(x))
+    const user = pickRandom(unpickedUsers)
+    users.push(user)
+  }
+
+  return `${users.join(' ')} ${text}`
+}
+
+
 async function lsGroup () {
   const query = datastore.createQuery('slashLottery')
 
@@ -89,6 +118,7 @@ function slashcommand (feature) {
 }
 
 exports.slashLottery = slashcommand(lottery)
+exports.slashLottery = slashcommand(lotteryN)
 exports.slashLotterySet = slashcommand(setGroup)
 exports.slashLotteryUnset = slashcommand(unsetGroup)
 exports.slashLotteryLs = slashcommand(lsGroup)
