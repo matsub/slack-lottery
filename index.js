@@ -118,7 +118,7 @@ function slashcommand (feature) {
 }
 
 exports.slashLottery = slashcommand(lottery)
-exports.slashLottery = slashcommand(lotteryN)
+exports.slashLotteryN = slashcommand(lotteryN)
 exports.slashLotterySet = slashcommand(setGroup)
 exports.slashLotteryUnset = slashcommand(unsetGroup)
 exports.slashLotteryLs = slashcommand(lsGroup)
