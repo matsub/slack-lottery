@@ -2,10 +2,17 @@
   "name": "slack-lottery",
   "author": "matsub <matsub.rk@gmail.com>",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "jest",
+    "dev": "jest --watch"
   },
   "devDependencies": {
-    "eslint": "^5.15.1"
+    "eslint": "^5.15.1",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-jest": "^22.9.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "jest": "^24.8.0",
+    "prettier": "^1.18.2"
   },
   "dependencies": {
     "@google-cloud/datastore": "^3.1.1"

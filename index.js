@@ -1,124 +1,116 @@
-const { Datastore } = require('@google-cloud/datastore')
-const datastore = new Datastore()
+const { Datastore } = require("@google-cloud/datastore");
+const datastore = new Datastore();
 
-
-function bare (uname) {
-  const matched = uname.match(/<.*\|(.*)>/)
+function bare(uname) {
+  const matched = uname.match(/<.*\|(.*)>/);
 
   if (matched === null) {
-    return uname
+    return uname;
   }
 
-  return matched[1]
+  return matched[1];
 }
 
-
-async function setGroup (req) {
+async function setGroup(req) {
   // validate format
   if (!/[^ ]* .*/.test(req.body.text)) {
-    return 'Usage: /lottery-set [group] [[@user],...]'
+    return "Usage: /lottery-set [group] [[@user],...]";
   }
 
-  const [group,...users] = req.body.text.split(/[, ]+/)
-  const key = datastore.key('slashLottery')
-  const entity = { key, data: { group, users } }
+  const [group, ...users] = req.body.text.split(/[, ]+/);
+  const key = datastore.key("slashLottery");
+  const entity = { key, data: { group, users } };
 
-  await datastore.save(entity)
+  await datastore.save(entity);
 
-  return `Registered.\n${group}: ${users}`
+  return `Registered.\n${group}: ${users}`;
 }
 
-
-async function lottery (req) {
-  const [group, text] = req.body.text.split(/ (.*)/)
+async function lottery(req) {
+  const [group, text] = req.body.text.split(/ (.*)/);
 
   const query = datastore
-    .createQuery('slashLottery')
-    .filter('group', '=', group)
-  const [[entity]] = await datastore.runQuery(query)
+    .createQuery("slashLottery")
+    .filter("group", "=", group);
+  const [[entity]] = await datastore.runQuery(query);
 
   if (entity.users === undefined) {
-    return `Could not found group: ${group}`
+    return `Could not found group: ${group}`;
   }
 
-  const user = pickRandom(entity.users)
+  const user = pickRandom(entity.users);
 
-  return `${user} ${text}`
+  return `${user} ${text}`;
 }
 
-
-async function lotteryN (req) {
-  const matched = req.body.text.match(/(\d+) (.*?) (.*)/)
+async function lotteryN(req) {
+  const matched = req.body.text.match(/(\d+) (.*?) (.*)/);
 
   if (matched === null) {
-    return 'Usage: /lottery-n [num-o-pick] [group] [message]'
+    return "Usage: /lottery-n [num-o-pick] [group] [message]";
   }
 
-  const [, num, group, text] = matched
+  const [, num, group, text] = matched;
 
   const query = datastore
-    .createQuery('slashLottery')
-    .filter('group', '=', group)
-  const [[entity]] = await datastore.runQuery(query)
+    .createQuery("slashLottery")
+    .filter("group", "=", group);
+  const [[entity]] = await datastore.runQuery(query);
 
   if (entity.users === undefined) {
-    return `Could not found group: ${group}`
+    return `Could not found group: ${group}`;
   }
 
-  const users = []
-  for (let i=0; i<num; i++) {
-    const unpickedUsers = entity.users.filter(x => !users.includes(x))
-    const user = pickRandom(unpickedUsers)
-    users.push(user)
+  const users = [];
+  for (let i = 0; i < num; i++) {
+    const unpickedUsers = entity.users.filter(x => !users.includes(x));
+    const user = pickRandom(unpickedUsers);
+    users.push(user);
   }
 
-  return `${users.join(' ')} ${text}`
+  return `${users.join(" ")} ${text}`;
 }
 
+async function lsGroup() {
+  const query = datastore.createQuery("slashLottery");
 
-async function lsGroup () {
-  const query = datastore.createQuery('slashLottery')
+  const [entities] = await datastore.runQuery(query);
+  const groups = entities.map(e => `${e.group}: ${e.users.map(bare)}`);
 
-  const [entities] = await datastore.runQuery(query)
-  const groups = entities.map(e => `${e.group}: ${e.users.map(bare)}`)
-
-  return groups.join('\n')
+  return groups.join("\n");
 }
 
-
-async function unsetGroup (req) {
-  const group = req.body.text
+async function unsetGroup(req) {
+  const group = req.body.text;
   const query = datastore
-    .createQuery('slashLottery')
-    .filter('group', '=', group)
+    .createQuery("slashLottery")
+    .filter("group", "=", group);
 
-  const [[entity]] = await datastore.runQuery(query)
-  const key = entity[datastore.KEY]
+  const [[entity]] = await datastore.runQuery(query);
+  const key = entity[datastore.KEY];
 
-  await datastore.delete(key)
+  await datastore.delete(key);
 
-  return `Unregistered: ${group}`
+  return `Unregistered: ${group}`;
 }
-
 
 // pick a random element from an array
-function pickRandom (array) {
-  return array[Math.floor(Math.random()*array.length)]
+function pickRandom(array) {
+  return array[Math.floor(Math.random() * array.length)];
 }
 
-
-function slashcommand (feature) {
+function slashcommand(feature) {
   return async (req, res) => {
-    const text = await feature(req)
-    const msg = { response_type: 'in_channel', text }
+    const text = await feature(req);
+    const msg = { response_type: "in_channel", text };
 
-    res.setHeader('Content-Type', 'application/json')
-    res.send(JSON.stringify(msg))
-  }
+    res.setHeader("Content-Type", "application/json");
+    res.send(JSON.stringify(msg));
+  };
 }
 
-exports.slashLottery = slashcommand(lottery)
-exports.slashLotteryN = slashcommand(lotteryN)
-exports.slashLotterySet = slashcommand(setGroup)
-exports.slashLotteryUnset = slashcommand(unsetGroup)
-exports.slashLotteryLs = slashcommand(lsGroup)
+exports.slashLottery = slashcommand(lottery);
+exports.slashLotteryN = slashcommand(lotteryN);
+exports.slashLotterySet = slashcommand(setGroup);
+exports.slashLotteryUnset = slashcommand(unsetGroup);
+exports.slashLotteryLs = slashcommand(lsGroup);
