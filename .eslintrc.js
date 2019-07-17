@@ -7,11 +7,9 @@ module.exports = {
     es6: true,
     node: true
   },
-  plugins: ["prettier", "jest"],
   extends: [
     "eslint:recommended",
     "plugin:prettier/recommended",
-    "plugin:jest/recommended",
   ],
   rules: {
     "no-console": process.env.NODE_ENV !== "production" ? "off" : "error",

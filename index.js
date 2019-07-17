@@ -1,6 +1,12 @@
 const { Datastore } = require("@google-cloud/datastore");
 const datastore = new Datastore();
 
+// pick a random element from an array
+function pickRandom(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
+// bare user name from uname string
 function bare(uname) {
   const matched = uname.match(/<.*\|(.*)>/);
 
@@ -11,21 +17,7 @@ function bare(uname) {
   return matched[1];
 }
 
-async function setGroup(req) {
-  // validate format
-  if (!/[^ ]* .*/.test(req.body.text)) {
-    return "Usage: /lottery-set [group] [[@user],...]";
-  }
-
-  const [group, ...users] = req.body.text.split(/[, ]+/);
-  const key = datastore.key("slashLottery");
-  const entity = { key, data: { group, users } };
-
-  await datastore.save(entity);
-
-  return `Registered.\n${group}: ${users}`;
-}
-
+// Cloud Function: /lottery
 async function lottery(req) {
   const [group, text] = req.body.text.split(/ (.*)/);
 
@@ -43,6 +35,7 @@ async function lottery(req) {
   return `${user} ${text}`;
 }
 
+// Cloud Function: /lottery-n
 async function lotteryN(req) {
   const matched = req.body.text.match(/(\d+) (.*?) (.*)/);
 
@@ -71,15 +64,23 @@ async function lotteryN(req) {
   return `${users.join(" ")} ${text}`;
 }
 
-async function lsGroup() {
-  const query = datastore.createQuery("slashLottery");
+// Cloud Function: /lottery-set
+async function setGroup(req) {
+  // validate format
+  if (!/[^ ]* .*/.test(req.body.text)) {
+    return "Usage: /lottery-set [group] [[@user],...]";
+  }
 
-  const [entities] = await datastore.runQuery(query);
-  const groups = entities.map(e => `${e.group}: ${e.users.map(bare)}`);
+  const [group, ...users] = req.body.text.split(/[, ]+/);
+  const key = datastore.key("slashLottery");
+  const entity = { key, data: { group, users } };
 
-  return groups.join("\n");
+  await datastore.save(entity);
+
+  return `Registered.\n${group}: ${users}`;
 }
 
+// Cloud Function: /lottery-unset
 async function unsetGroup(req) {
   const group = req.body.text;
   const query = datastore
@@ -94,9 +95,14 @@ async function unsetGroup(req) {
   return `Unregistered: ${group}`;
 }
 
-// pick a random element from an array
-function pickRandom(array) {
-  return array[Math.floor(Math.random() * array.length)];
+// Cloud Function: /lottery-ls
+async function lsGroup() {
+  const query = datastore.createQuery("slashLottery");
+
+  const [entities] = await datastore.runQuery(query);
+  const groups = entities.map(e => `${e.group}: ${e.users.map(bare)}`);
+
+  return groups.join("\n");
 }
 
 function slashcommand(feature) {
