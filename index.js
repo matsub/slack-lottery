@@ -200,7 +200,7 @@ function slashcommand(feature) {
     res.send(JSON.stringify({ text: "just a sec..." }));
 
     const message = await feature(req);
-    message.channel = req.channel_id;
+    message.channel = req.body.channel_id;
     console.log(req);
     console.log(message.body);
 
