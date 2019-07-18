@@ -71,3 +71,13 @@ steps:
     '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
   ]
   waitFor: ['-']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: [
+    'functions',
+    'deploy',
+    'slashBench',
+    '--runtime=nodejs8',
+    '--trigger-http',
+    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+  ]
+  waitFor: ['-']
