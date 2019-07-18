@@ -8,43 +8,43 @@ steps:
     'functions',
     'deploy',
     'slashLottery',
-    '--runtime=nodejs8',
+    '--runtime nodejs8',
     '--trigger-http',
-    '--set-env-vars="WEBHOOK_ENDPOINT"="${_WEBHOOK_ENDPOINT}"'
+    '--set-env-vars WEBHOOK_ENDPOINT=${_WEBHOOK_ENDPOINT}'
   ]
 - name: 'gcr.io/cloud-builders/gcloud'
   args: [
     'functions',
     'deploy',
     'slashLotteryN',
-    '--runtime=nodejs8',
+    '--runtime nodejs8',
     '--trigger-http',
-    '--set-env-vars="WEBHOOK_ENDPOINT"="${_WEBHOOK_ENDPOINT}"'
+    '--set-env-vars WEBHOOK_ENDPOINT=${_WEBHOOK_ENDPOINT}'
   ]
 - name: 'gcr.io/cloud-builders/gcloud'
   args: [
     'functions',
     'deploy',
     'slashLotterySet',
-    '--runtime=nodejs8',
+    '--runtime nodejs8',
     '--trigger-http',
-    '--set-env-vars="WEBHOOK_ENDPOINT"="${_WEBHOOK_ENDPOINT}"'
+    '--set-env-vars WEBHOOK_ENDPOINT=${_WEBHOOK_ENDPOINT}'
   ]
 - name: 'gcr.io/cloud-builders/gcloud'
   args: [
     'functions',
     'deploy',
     'slashLotteryUnset',
-    '--runtime=nodejs8',
+    '--runtime nodejs8',
     '--trigger-http',
-    '--set-env-vars="WEBHOOK_ENDPOINT"="${_WEBHOOK_ENDPOINT}"'
+    '--set-env-vars WEBHOOK_ENDPOINT=${_WEBHOOK_ENDPOINT}'
   ]
 - name: 'gcr.io/cloud-builders/gcloud'
   args: [
     'functions',
     'deploy',
     'slashLotteryLs',
-    '--runtime=nodejs8',
+    '--runtime nodejs8',
     '--trigger-http',
-    '--set-env-vars="WEBHOOK_ENDPOINT"="${_WEBHOOK_ENDPOINT}"'
+    '--set-env-vars WEBHOOK_ENDPOINT=${_WEBHOOK_ENDPOINT}'
   ]
