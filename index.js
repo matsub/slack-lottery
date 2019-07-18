@@ -235,31 +235,3 @@ exports.slashLotteryAskN = slashcommand(lotteryAskN);
 exports.slashLotterySet = slashcommand(setGroup);
 exports.slashLotteryUnset = slashcommand(unsetGroup);
 exports.slashLotteryLs = slashcommand(lsGroup);
-exports.slashBench = async (req, res) => {
-  console.log(req);
-  const [group] = req.body.text.split(/ (.*)/);
-
-  console.log(Date.now());
-  const query = datastore
-    .createQuery("slashLottery")
-    .filter("group", "=", group);
-  const [[entity]] = await datastore.runQuery(query);
-
-  console.log(Date.now());
-  const originatorPattern = new RegExp(req.body.user_id);
-  const asked = entity.users.filter(u => !originatorPattern.test(u));
-  pickRandom(asked);
-
-  console.log(Date.now());
-
-  await fetch(`https://slack.com/api/chat.postMessage`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      Authorization: `Bearer ${process.env.SLACK_TOKEN}` // Your app's xoxb- token value (available on the Install App page)
-    },
-    body: '{"text":"dice","channel_id":"C02D34BK1"}'
-  });
-  console.log(Date.now());
-  res.status(200).send("OK");
-};
