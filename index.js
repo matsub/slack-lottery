@@ -5,7 +5,6 @@ const datastore = new Datastore();
 class Message {
   constructor(content) {
     this._content = content;
-    this._response_type = "in_channel";
   }
 
   set channel(channel_id) {
@@ -18,20 +17,14 @@ class Message {
 
   get body() {
     const message = {
-      response_type: this._response_type,
-      text: this._content
+      text: this._content,
+      channel: this._channel_id
     };
-
     return JSON.stringify(message);
   }
 }
 
-class ErrorMessage extends Message {
-  constructor(content) {
-    super(content);
-    this._response_type = "ephemeral";
-  }
-}
+class ErrorMessage extends Message {}
 
 // pick a random element from an array
 function pickRandom(array) {
@@ -92,6 +85,63 @@ async function lotteryN(req) {
   const users = [];
   for (let i = 0; i < num; i++) {
     const unpickedUsers = entity.users.filter(x => !users.includes(x));
+    const user = pickRandom(unpickedUsers);
+    users.push(user);
+  }
+
+  return new Message(`${users.join(" ")} ${text}`);
+}
+
+// Cloud Function: /lottery-ask
+async function lotteryAsk(req) {
+  const [group, text] = req.body.text.split(/ (.*)/);
+
+  const query = datastore
+    .createQuery("slashLottery")
+    .filter("group", "=", group);
+  const [[entity]] = await datastore.runQuery(query);
+
+  if (entity === undefined) {
+    return new ErrorMessage(`Could not found group: ${group}`);
+  }
+
+  const originatorPattern = new RegExp(req.body.user_id);
+  const asked = entity.users.filter(u => !originatorPattern.test(u));
+  const user = pickRandom(asked);
+
+  if (text === undefined) {
+    return new Message(user);
+  }
+
+  return new Message(`${user} ${text}`);
+}
+
+// Cloud Function: /lottery-ask-n
+async function lotteryAskN(req) {
+  if (!/\d+ .*/.test(req.body.text)) {
+    return new ErrorMessage(
+      "Usage: /lottery-ask-n [num-o-pick] [group] [message]"
+    );
+  }
+
+  const extracted = req.body.text.match(/(\d+) (.*?) (.*)/);
+  const [, num, group, text] = extracted;
+
+  const query = datastore
+    .createQuery("slashLottery")
+    .filter("group", "=", group);
+  const [[entity]] = await datastore.runQuery(query);
+
+  if (entity === undefined) {
+    return new ErrorMessage(`Could not found group: ${group}`);
+  }
+
+  const originatorPattern = new RegExp(req.body.user_id);
+  const asked = entity.users.filter(u => !originatorPattern.test(u));
+
+  const users = [];
+  for (let i = 0; i < num; i++) {
+    const unpickedUsers = asked.filter(x => !users.includes(x));
     const user = pickRandom(unpickedUsers);
     users.push(user);
   }
@@ -168,6 +218,8 @@ function slashcommand(feature) {
 
 exports.slashLottery = slashcommand(lottery);
 exports.slashLotteryN = slashcommand(lotteryN);
+exports.slashLotteryAsk = slashcommand(lotteryAsk);
+exports.slashLotteryAsk = slashcommand(lotteryAskN);
 exports.slashLotterySet = slashcommand(setGroup);
 exports.slashLotteryUnset = slashcommand(unsetGroup);
 exports.slashLotteryLs = slashcommand(lsGroup);
