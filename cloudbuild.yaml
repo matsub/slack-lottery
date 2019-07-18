@@ -10,7 +10,7 @@ steps:
     'slashLottery',
     '--runtime=nodejs8',
     '--trigger-http',
-    '--set-env-vars=WEBHOOK_ENDPOINT=${_WEBHOOK_ENDPOINT}'
+    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
   ]
 - name: 'gcr.io/cloud-builders/gcloud'
   args: [
@@ -19,7 +19,7 @@ steps:
     'slashLotteryN',
     '--runtime=nodejs8',
     '--trigger-http',
-    '--set-env-vars=WEBHOOK_ENDPOINT=${_WEBHOOK_ENDPOINT}'
+    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
   ]
 - name: 'gcr.io/cloud-builders/gcloud'
   args: [
@@ -28,7 +28,7 @@ steps:
     'slashLotterySet',
     '--runtime=nodejs8',
     '--trigger-http',
-    '--set-env-vars=WEBHOOK_ENDPOINT=${_WEBHOOK_ENDPOINT}'
+    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
   ]
 - name: 'gcr.io/cloud-builders/gcloud'
   args: [
@@ -37,7 +37,7 @@ steps:
     'slashLotteryUnset',
     '--runtime=nodejs8',
     '--trigger-http',
-    '--set-env-vars=WEBHOOK_ENDPOINT=${_WEBHOOK_ENDPOINT}'
+    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
   ]
 - name: 'gcr.io/cloud-builders/gcloud'
   args: [
@@ -46,5 +46,5 @@ steps:
     'slashLotteryLs',
     '--runtime=nodejs8',
     '--trigger-http',
-    '--set-env-vars=WEBHOOK_ENDPOINT=${_WEBHOOK_ENDPOINT}'
+    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
   ]

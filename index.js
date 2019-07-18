@@ -58,7 +58,7 @@ async function lottery(req) {
     .filter("group", "=", group);
   const [[entity]] = await datastore.runQuery(query);
 
-  if (entity.users === undefined) {
+  if (entity === undefined) {
     return new ErrorMessage(`Could not found group: ${group}`);
   }
 
@@ -85,7 +85,7 @@ async function lotteryN(req) {
     .filter("group", "=", group);
   const [[entity]] = await datastore.runQuery(query);
 
-  if (entity.users === undefined) {
+  if (entity === undefined) {
     return new ErrorMessage(`Could not found group: ${group}`);
   }
 
@@ -146,14 +146,21 @@ async function lsGroup() {
 
 function slashcommand(feature) {
   return async (req, res) => {
-    res.send(200);
+    res.setHeader("Content-Type", "application/json");
+    res.send(JSON.stringify({ text: "just a sec..." }));
 
     const message = await feature(req);
     message.channel = req.channel_id;
 
-    await fetch(process.env.WEBHOOK_ENDPOINT, {
+    const isSucceeded = !(message instanceof ErrorMessage);
+    const apiMethod = isSucceeded ? "chat.postMessage" : "chat.postEphemeral";
+
+    await fetch(`https://slack.com/api/${apiMethod}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        Authorization: `Bearer ${process.env.SLACK_TOKEN}` // Your app's xoxb- token value (available on the Install App page)
+      },
       body: message.body
     });
   };
