@@ -5,15 +5,33 @@ const datastore = new Datastore();
 class Message {
   constructor(content) {
     this._content = content;
+    this._response_type = "in_channel";
+  }
+
+  set channel(channel_id) {
+    this._channel_id = channel_id;
+  }
+
+  get channel() {
+    return this._channel_id;
   }
 
   get body() {
-    const message = { text: this._content };
+    const message = {
+      response_type: this._response_type,
+      text: this._content
+    };
+
     return JSON.stringify(message);
   }
 }
 
-class ErrorMessage extends Message {}
+class ErrorMessage extends Message {
+  constructor(content) {
+    super(content);
+    this._response_type = "ephemeral";
+  }
+}
 
 // pick a random element from an array
 function pickRandom(array) {
@@ -128,18 +146,16 @@ async function lsGroup() {
 
 function slashcommand(feature) {
   return async (req, res) => {
-    const message = await feature(req);
+    res.send(200);
 
-    if (message instanceof ErrorMessage) {
-      res.setHeader("Content-Type", "application/json");
-      res.send(message.body);
-    } else {
-      await fetch(process.env.WEBHOOK_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: message.body
-      });
-    }
+    const message = await feature(req);
+    message.channel = req.channel_id;
+
+    await fetch(process.env.WEBHOOK_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: message.body
+    });
   };
 }
 
