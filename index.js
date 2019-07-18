@@ -1,5 +1,19 @@
 const { Datastore } = require("@google-cloud/datastore");
+const fetch = require("node-fetch");
 const datastore = new Datastore();
+
+class Message {
+  constructor(content) {
+    this._content = content;
+  }
+
+  get body() {
+    const message = { text: this._content };
+    return JSON.stringify(message);
+  }
+}
+
+class ErrorMessage extends Message {}
 
 // pick a random element from an array
 function pickRandom(array) {
@@ -27,23 +41,26 @@ async function lottery(req) {
   const [[entity]] = await datastore.runQuery(query);
 
   if (entity.users === undefined) {
-    return `Could not found group: ${group}`;
+    return new ErrorMessage(`Could not found group: ${group}`);
   }
 
   const user = pickRandom(entity.users);
 
-  return `${user} ${text}`;
+  if (text === undefined) {
+    return new Message(user);
+  }
+
+  return new Message(`${user} ${text}`);
 }
 
 // Cloud Function: /lottery-n
 async function lotteryN(req) {
-  const matched = req.body.text.match(/(\d+) (.*?) (.*)/);
-
-  if (matched === null) {
-    return "Usage: /lottery-n [num-o-pick] [group] [message]";
+  if (!/\d+ .*/.test(req.body.text)) {
+    return new ErrorMessage("Usage: /lottery-n [num-o-pick] [group] [message]");
   }
 
-  const [, num, group, text] = matched;
+  const extracted = req.body.text.match(/(\d+) (.*?) (.*)/);
+  const [, num, group, text] = extracted;
 
   const query = datastore
     .createQuery("slashLottery")
@@ -51,7 +68,7 @@ async function lotteryN(req) {
   const [[entity]] = await datastore.runQuery(query);
 
   if (entity.users === undefined) {
-    return `Could not found group: ${group}`;
+    return new ErrorMessage(`Could not found group: ${group}`);
   }
 
   const users = [];
@@ -61,14 +78,14 @@ async function lotteryN(req) {
     users.push(user);
   }
 
-  return `${users.join(" ")} ${text}`;
+  return new Message(`${users.join(" ")} ${text}`);
 }
 
 // Cloud Function: /lottery-set
 async function setGroup(req) {
   // validate format
   if (!/[^ ]* .*/.test(req.body.text)) {
-    return "Usage: /lottery-set [group] [[@user],...]";
+    return new ErrorMessage("Usage: /lottery-set [group] [[@user],...]");
   }
 
   const [group, ...users] = req.body.text.split(/[, ]+/);
@@ -77,7 +94,7 @@ async function setGroup(req) {
 
   await datastore.save(entity);
 
-  return `Registered.\n${group}: ${users}`;
+  return new Message(`Registered.\n${group}: ${users}`);
 }
 
 // Cloud Function: /lottery-unset
@@ -88,11 +105,15 @@ async function unsetGroup(req) {
     .filter("group", "=", group);
 
   const [[entity]] = await datastore.runQuery(query);
-  const key = entity[datastore.KEY];
 
+  if (entity === undefined) {
+    return new ErrorMessage(`Cannot find the group: ${group}`);
+  }
+
+  const key = entity[datastore.KEY];
   await datastore.delete(key);
 
-  return `Unregistered: ${group}`;
+  return new Message(`Unregistered: ${group}`);
 }
 
 // Cloud Function: /lottery-ls
@@ -102,16 +123,23 @@ async function lsGroup() {
   const [entities] = await datastore.runQuery(query);
   const groups = entities.map(e => `${e.group}: ${e.users.map(bare)}`);
 
-  return groups.join("\n");
+  return new Message(groups.join("\n"));
 }
 
 function slashcommand(feature) {
   return async (req, res) => {
-    const text = await feature(req);
-    const msg = { response_type: "in_channel", text };
+    const message = await feature(req);
 
-    res.setHeader("Content-Type", "application/json");
-    res.send(JSON.stringify(msg));
+    if (message instanceof ErrorMessage) {
+      res.setHeader("Content-Type", "application/json");
+      res.send(message.body);
+    } else {
+      await fetch(process.env.WEBHOOK_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: message.body
+      });
+    }
   };
 }
 
