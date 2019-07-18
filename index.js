@@ -18,7 +18,7 @@ class Message {
   get body() {
     const message = {
       text: this._content,
-      channel: this._channel_id
+      channel: this.channel
     };
     return JSON.stringify(message);
   }
@@ -197,27 +197,17 @@ async function lsGroup() {
 function slashcommand(feature) {
   return async (req, res) => {
     res.setHeader("Content-Type", "application/json");
-    console.log("Respond");
     res.send(JSON.stringify({ text: "just a sec..." }));
 
     const message = await feature(req);
     message.channel = req.channel_id;
+    console.log(req);
+    console.log(message.body);
 
     const isSucceeded = !(message instanceof ErrorMessage);
     const apiMethod = isSucceeded ? "chat.postMessage" : "chat.postEphemeral";
 
-    console.log("Fetching");
-    const fetched = await fetch(`https://slack.com/api/${apiMethod}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        Authorization: `Bearer ${process.env.SLACK_TOKEN}` // Your app's xoxb- token value (available on the Install App page)
-      },
-      body: message.body
-    });
-    console.log("Done.");
-    console.log(fetched);
-    console.log({
+    await fetch(`https://slack.com/api/${apiMethod}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
