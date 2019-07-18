@@ -207,7 +207,7 @@ function slashcommand(feature) {
     const apiMethod = isSucceeded ? "chat.postMessage" : "chat.postEphemeral";
 
     console.log("Fetching");
-    await fetch(`https://slack.com/api/${apiMethod}`, {
+    const fetched = await fetch(`https://slack.com/api/${apiMethod}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json; charset=utf-8",
@@ -216,13 +216,22 @@ function slashcommand(feature) {
       body: message.body
     });
     console.log("Done.");
+    console.log(fetched);
+    console.log({
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        Authorization: `Bearer ${process.env.SLACK_TOKEN}` // Your app's xoxb- token value (available on the Install App page)
+      },
+      body: message.body
+    });
   };
 }
 
 exports.slashLottery = slashcommand(lottery);
 exports.slashLotteryN = slashcommand(lotteryN);
 exports.slashLotteryAsk = slashcommand(lotteryAsk);
-exports.slashLotteryAsk = slashcommand(lotteryAskN);
+exports.slashLotteryAskN = slashcommand(lotteryAskN);
 exports.slashLotterySet = slashcommand(setGroup);
 exports.slashLotteryUnset = slashcommand(unsetGroup);
 exports.slashLotteryLs = slashcommand(lsGroup);
