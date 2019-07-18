@@ -15,10 +15,19 @@ class Message {
     return this._channel_id;
   }
 
+  set user(user_id) {
+    this._user_id = user_id;
+  }
+
+  get user() {
+    return this._user_id;
+  }
+
   get body() {
     const message = {
       text: this._content,
-      channel: this.channel
+      channel: this.channel,
+      user: this.user
     };
     return JSON.stringify(message);
   }
@@ -201,11 +210,13 @@ function slashcommand(feature) {
 
     const message = await feature(req);
     message.channel = req.body.channel_id;
-    console.log(req);
-    console.log(message.body);
 
     const isSucceeded = !(message instanceof ErrorMessage);
     const apiMethod = isSucceeded ? "chat.postMessage" : "chat.postEphemeral";
+
+    if (!isSucceeded) {
+      message.user = req.body.user_id;
+    }
 
     await fetch(`https://slack.com/api/${apiMethod}`, {
       method: "POST",

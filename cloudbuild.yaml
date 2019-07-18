@@ -1,8 +1,6 @@
 steps:
 - name: 'gcr.io/cloud-builders/npm'
   args: ['install']
-- name: 'gcr.io/cloud-builders/npm'
-  args: ['run', 'lint']
 - name: 'gcr.io/cloud-builders/gcloud'
   args: [
     'functions',
@@ -12,57 +10,64 @@ steps:
     '--trigger-http',
     '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
   ]
-#- name: 'gcr.io/cloud-builders/gcloud'
-#  args: [
-#    'functions',
-#    'deploy',
-#    'slashLotteryN',
-#    '--runtime=nodejs8',
-#    '--trigger-http',
-#    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
-#  ]
-#- name: 'gcr.io/cloud-builders/gcloud'
-#  args: [
-#    'functions',
-#    'deploy',
-#    'slashLotteryAsk',
-#    '--runtime=nodejs8',
-#    '--trigger-http',
-#    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
-#  ]
-#- name: 'gcr.io/cloud-builders/gcloud'
-#  args: [
-#    'functions',
-#    'deploy',
-#    'slashLotteryAskN',
-#    '--runtime=nodejs8',
-#    '--trigger-http',
-#    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
-#  ]
-#- name: 'gcr.io/cloud-builders/gcloud'
-#  args: [
-#    'functions',
-#    'deploy',
-#    'slashLotterySet',
-#    '--runtime=nodejs8',
-#    '--trigger-http',
-#    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
-#  ]
-#- name: 'gcr.io/cloud-builders/gcloud'
-#  args: [
-#    'functions',
-#    'deploy',
-#    'slashLotteryUnset',
-#    '--runtime=nodejs8',
-#    '--trigger-http',
-#    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
-#  ]
-#- name: 'gcr.io/cloud-builders/gcloud'
-#  args: [
-#    'functions',
-#    'deploy',
-#    'slashLotteryLs',
-#    '--runtime=nodejs8',
-#    '--trigger-http',
-#    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
-#  ]
+  waitFor: ['-']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: [
+    'functions',
+    'deploy',
+    'slashLotteryN',
+    '--runtime=nodejs8',
+    '--trigger-http',
+    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+  ]
+  waitFor: ['-']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: [
+    'functions',
+    'deploy',
+    'slashLotteryAsk',
+    '--runtime=nodejs8',
+    '--trigger-http',
+    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+  ]
+  waitFor: ['-']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: [
+    'functions',
+    'deploy',
+    'slashLotteryAskN',
+    '--runtime=nodejs8',
+    '--trigger-http',
+    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+  ]
+  waitFor: ['-']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: [
+    'functions',
+    'deploy',
+    'slashLotterySet',
+    '--runtime=nodejs8',
+    '--trigger-http',
+    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+  ]
+  waitFor: ['-']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: [
+    'functions',
+    'deploy',
+    'slashLotteryUnset',
+    '--runtime=nodejs8',
+    '--trigger-http',
+    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+  ]
+  waitFor: ['-']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: [
+    'functions',
+    'deploy',
+    'slashLotteryLs',
+    '--runtime=nodejs8',
+    '--trigger-http',
+    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+  ]
+  waitFor: ['-']
