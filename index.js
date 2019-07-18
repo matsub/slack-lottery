@@ -197,6 +197,7 @@ async function lsGroup() {
 function slashcommand(feature) {
   return async (req, res) => {
     res.setHeader("Content-Type", "application/json");
+    console.log("Respond");
     res.send(JSON.stringify({ text: "just a sec..." }));
 
     const message = await feature(req);
@@ -205,6 +206,7 @@ function slashcommand(feature) {
     const isSucceeded = !(message instanceof ErrorMessage);
     const apiMethod = isSucceeded ? "chat.postMessage" : "chat.postEphemeral";
 
+    console.log("Fetching");
     await fetch(`https://slack.com/api/${apiMethod}`, {
       method: "POST",
       headers: {
@@ -213,6 +215,7 @@ function slashcommand(feature) {
       },
       body: message.body
     });
+    console.log("Done.");
   };
 }
 
