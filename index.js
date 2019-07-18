@@ -134,6 +134,7 @@ function slashcommand(feature) {
       res.setHeader("Content-Type", "application/json");
       res.send(message.body);
     } else {
+      console.log(process.env.WEBHOOK_ENDPOINT);
       await fetch(process.env.WEBHOOK_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
