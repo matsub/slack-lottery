@@ -205,8 +205,7 @@ async function lsGroup() {
 
 function slashcommand(feature) {
   return async (req, res) => {
-    res.setHeader("Content-Type", "application/json");
-    res.send(JSON.stringify({ text: "" }));
+    res.status(200).send("");
 
     const message = await feature(req);
     message.channel = req.body.channel_id;
