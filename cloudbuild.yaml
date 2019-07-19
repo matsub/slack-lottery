@@ -8,7 +8,7 @@ steps:
     'slashLottery',
     '--runtime=nodejs8',
     '--trigger-http',
-    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}',
     '--region=asia-northeast1'
   ]
   waitFor: ['-']
@@ -19,7 +19,7 @@ steps:
     'slashLotteryN',
     '--runtime=nodejs8',
     '--trigger-http',
-    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}',
     '--region=asia-northeast1'
   ]
   waitFor: ['-']
@@ -30,7 +30,7 @@ steps:
     'slashLotteryAsk',
     '--runtime=nodejs8',
     '--trigger-http',
-    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}',
     '--region=asia-northeast1'
   ]
   waitFor: ['-']
@@ -41,7 +41,7 @@ steps:
     'slashLotteryAskN',
     '--runtime=nodejs8',
     '--trigger-http',
-    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}',
     '--region=asia-northeast1'
   ]
   waitFor: ['-']
@@ -52,7 +52,7 @@ steps:
     'slashLotterySet',
     '--runtime=nodejs8',
     '--trigger-http',
-    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}',
     '--region=asia-northeast1'
   ]
   waitFor: ['-']
@@ -63,7 +63,7 @@ steps:
     'slashLotteryUnset',
     '--runtime=nodejs8',
     '--trigger-http',
-    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}',
     '--region=asia-northeast1'
   ]
   waitFor: ['-']
@@ -74,7 +74,7 @@ steps:
     'slashLotteryLs',
     '--runtime=nodejs8',
     '--trigger-http',
-    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+    '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}',
     '--region=asia-northeast1'
   ]
   waitFor: ['-']
