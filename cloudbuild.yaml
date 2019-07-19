@@ -1,6 +1,6 @@
 steps:
 - name: 'gcr.io/cloud-builders/npm'
-  args: ['install']
+  args: ['install', '--production']
 - name: 'gcr.io/cloud-builders/gcloud'
   args: [
     'functions',
@@ -9,6 +9,7 @@ steps:
     '--runtime=nodejs8',
     '--trigger-http',
     '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+    '--region=asia-northeast1'
   ]
   waitFor: ['-']
 - name: 'gcr.io/cloud-builders/gcloud'
@@ -19,6 +20,7 @@ steps:
     '--runtime=nodejs8',
     '--trigger-http',
     '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+    '--region=asia-northeast1'
   ]
   waitFor: ['-']
 - name: 'gcr.io/cloud-builders/gcloud'
@@ -29,6 +31,7 @@ steps:
     '--runtime=nodejs8',
     '--trigger-http',
     '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+    '--region=asia-northeast1'
   ]
   waitFor: ['-']
 - name: 'gcr.io/cloud-builders/gcloud'
@@ -39,6 +42,7 @@ steps:
     '--runtime=nodejs8',
     '--trigger-http',
     '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+    '--region=asia-northeast1'
   ]
   waitFor: ['-']
 - name: 'gcr.io/cloud-builders/gcloud'
@@ -49,6 +53,7 @@ steps:
     '--runtime=nodejs8',
     '--trigger-http',
     '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+    '--region=asia-northeast1'
   ]
   waitFor: ['-']
 - name: 'gcr.io/cloud-builders/gcloud'
@@ -59,6 +64,7 @@ steps:
     '--runtime=nodejs8',
     '--trigger-http',
     '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+    '--region=asia-northeast1'
   ]
   waitFor: ['-']
 - name: 'gcr.io/cloud-builders/gcloud'
@@ -69,5 +75,6 @@ steps:
     '--runtime=nodejs8',
     '--trigger-http',
     '--set-env-vars=SLACK_TOKEN=${_SLACK_TOKEN}'
+    '--region=asia-northeast1'
   ]
   waitFor: ['-']

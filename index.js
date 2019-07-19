@@ -1,6 +1,34 @@
+const https = require("https");
 const { Datastore } = require("@google-cloud/datastore");
-const fetch = require("node-fetch");
 const datastore = new Datastore();
+
+async function post(apiMethod, data) {
+  const options = {
+    hostname: "slack.com",
+    port: 443,
+    path: `/api/${apiMethod}`,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      Authorization: `Bearer ${process.env.SLACK_TOKEN}` // Your app's xoxb- token value (available on the Install App page)
+    }
+  };
+
+  const req = https.request(options, res => {
+    console.log(`post: ${apiMethod}\nstatusCode: ${res.statusCode}`);
+
+    res.on("data", data => {
+      console.log(data);
+    });
+  });
+
+  req.on("error", error => {
+    console.error(error);
+  });
+
+  req.write(data);
+  req.end();
+}
 
 class Message {
   constructor(content) {
@@ -217,14 +245,7 @@ function slashcommand(feature) {
       message.user = req.body.user_id;
     }
 
-    await fetch(`https://slack.com/api/${apiMethod}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        Authorization: `Bearer ${process.env.SLACK_TOKEN}` // Your app's xoxb- token value (available on the Install App page)
-      },
-      body: message.body
-    });
+    await post(apiMethod, message.body);
   };
 }
 
